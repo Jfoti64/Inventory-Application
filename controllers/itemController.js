@@ -144,8 +144,8 @@ exports.item_delete_post = asyncHandler(async (req, res, next) => {
     return res.redirect('/catalog/items');
   }
 
-  // Delete the item and redirect to the list of item.
-  await Item.findByIdAndRemove(req.body.itemid);
+  // Delete the item and redirect to the list of items.
+  await Item.findByIdAndDelete(req.body.itemid);
   res.redirect('/catalog/items');
 });
 
