@@ -33,8 +33,8 @@ app.use(
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
-const dev_db_url = "mongodb+srv://joshuafoti64:KDFJuKu0pyh7HkXK@cluster0.9tpdtqe.mongodb.net/inventory_application?retryWrites=true&w=majority&appName=Cluster0";
-const mongoDB = process.env.MONGODB_URI || dev_db_url;
+
+const mongoDB = process.env.MONGODB_URI;
 
 main().catch((err) => console.log(err));
 async function main() {
