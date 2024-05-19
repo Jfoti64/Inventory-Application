@@ -100,7 +100,16 @@ exports.category_delete_get = asyncHandler(async (req, res, next) => {
 
 // Handle Category delete on POST.
 exports.category_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Category delete POST");
+  const category = await Category.findById(req.body.categoryid).exec();
+
+  if (category === null) {
+    // No results. Redirect to list of all categories.
+    return res.redirect('/catalog/categories');
+  }
+
+  // Delete the category and redirect to the list of categories.
+  await Category.findByIdAndDelete(req.body.categoryid);
+  res.redirect('/catalog/categories');
 });
 
 // Display Category update form on GET.

@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <h1><%= title %></h1>
 
-<form method="POST">
+<form method="POST" action="/catalog/category/<%= category._id %>/delete">
   <div class="form-group">
     <label for="name">Name:</label>
     <input id="name" class="form-control" type="text" placeholder="Name of category" name="name" required value="<%= category && category.name ? category.name : '' %>">
@@ -10,7 +10,10 @@
     <label for="description">Description:</label>
     <textarea id="description" class="form-control" placeholder="Description" name="description" required><%= category && category.description ? category.description : '' %></textarea>
   </div>
-  <button class="btn btn-primary" type="submit">Submit</button>
+  <div class="form-group">
+    <input class="form-control" type="hidden" name="categoryid" value="<%= category._id %>">
+    <button class="btn btn-primary" type="submit">Submit</button>
+  </div>
 </form>
 
 <% if (errors && errors.length > 0) { %>
