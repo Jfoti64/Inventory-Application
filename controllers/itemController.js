@@ -177,6 +177,52 @@ exports.item_update_get = asyncHandler(async (req, res, next) => {
 });
 
 // Handle item update on POST.
-exports.item_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Item update POST");
-});
+exports.item_update_post = [
+  // Validate and sanitize fields.
+  body('name', 'Name must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Description must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('price', 'Price must be a positive number.').isFloat({ min: 0 }).escape(),
+  body('num_in_stock', 'Number in stock must be a non-negative integer.').isInt({ min: 0 }).escape(),
+  body('category.*').escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create an Item object with escaped/trimmed data and old id.
+    const item = new Item({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      num_in_stock: req.body.num_in_stock,
+      category: typeof req.body.category === 'undefined' ? [] : req.body.category,
+      _id: req.params.id, // This is required, or a new ID will be assigned!
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      const allCategories = await Category.find().sort({ name: 1 }).exec();
+
+      // Mark selected categories as checked.
+      for (const category of allCategories) {
+        if (item.category.includes(category._id.toString())) {
+          category.checked = 'true';
+        }
+      }
+
+      res.render("item_form", {
+        title: "Update Item",
+        categories: allCategories,
+        item: item,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid. Update the record.
+      const updatedItem = await Item.findByIdAndUpdate(req.params.id, item, {});
+      // Redirect to item detail page.
+      res.redirect(updatedItem.url);
+    }
+  }),
+];
