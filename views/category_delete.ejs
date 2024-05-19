@@ -1,0 +1,26 @@
+<%- include('partials/header') %>
+<h1><%= title %>: <%= category.name %></h1>
+
+<% if (item_list.length) { %>
+  <p>Delete the following items before attempting to delete this category.</p>
+  <ul>
+    <% item_list.forEach(function(item) { %>
+      <li>
+        <a href="<%= item.url %>">
+          <%= item.name %>
+        </a>
+      </li>
+    <% }); %>
+  </ul>
+<% } else { %> 
+  <p>Do you really want to delete this category?</p>
+
+  <form method="POST" action="/catalog/category/<%= category._id %>/delete">
+    <div class="form-group">
+      <input class="form-control" type="hidden" name="category" value="<%= category._id %>">
+      <button class="btn btn-primary" type="submit">Delete</button>
+    </div>
+  </form>
+<% } %>
+
+<%- include('partials/footer') %>

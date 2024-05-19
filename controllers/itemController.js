@@ -137,12 +137,43 @@ exports.item_delete_get = asyncHandler(async (req, res, next) => {
 
 // Handle item delete on POST.
 exports.item_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Item delete POST");
+  const item = await Item.findById(req.body.itemid).exec();
+
+  if (item === null) {
+    // No results. Redirect to list of all items.
+    return res.redirect('/catalog/items');
+  }
+
+  // Delete the item and redirect to the list of item.
+  await Item.findByIdAndRemove(req.body.itemid);
+  res.redirect('/catalog/items');
 });
 
 // Display item update form on GET.
 exports.item_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Item update GET");
+  const item = await Item.findById(req.params.id).exec();
+  const allCategories = await Category.find().sort({ name: 1 }).exec();
+
+  if (item === null) {
+    // No results.
+    const err = new Error("Item not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  // Mark selected categories as checked.
+  for (const category of allCategories) {
+    if (item.category.includes(category._id)) {
+      category.checked = 'true';
+    }
+  }
+
+  res.render('item_form', {
+    title: 'Update Item',
+    item: item,
+    categories: allCategories,
+    errors: [] // Ensure `errors` is always defined
+  });
 });
 
 // Handle item update on POST.

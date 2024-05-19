@@ -81,7 +81,21 @@ exports.category_create_post = [
 
 // Display Category delete form on GET.
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Category delete GET");
+  const category = await Category.findById(req.params.id).exec();
+
+  if (category === null) {
+    // No results.
+    return res.redirect('/catalog/categories');
+  }
+
+  // Fetch all items in category only if the category is found
+  const item_list = await Item.find({ category: category._id }).exec();
+
+  res.render('category_delete', {
+    title: 'Delete Category',
+    category: category,
+    item_list: item_list,
+  });
 });
 
 // Handle Category delete on POST.

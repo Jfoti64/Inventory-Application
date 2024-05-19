@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <h1><%= title %></h1>
 
-<form method="POST" action="/catalog/item/create">
+<form method="POST" action="/catalog/item/<%= item._id %>/update">
   <div class="form-group">
     <label for="name">Name:</label>
     <input id="name" class="form-control" type="text" placeholder="Name of item" name="name" required value="<%= item && item.name ? item.name : '' %>">
