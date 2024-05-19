@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+<h1><%= title %></h1>
+
+<form method="POST" action="/catalog/item/create">
+  <div class="form-group">
+    <label for="name">Name:</label>
+    <input id="name" class="form-control" type="text" placeholder="Name of item" name="name" required value="<%= item && item.name ? item.name : '' %>">
+  </div>
+  <div class="form-group">
+    <label for="description">Description:</label>
+    <textarea id="description" class="form-control" placeholder="Description" name="description" required><%= item && item.description ? item.description : '' %></textarea>
+  </div>
+  <div class="form-group">
+    <label>Category:</label>
+    <div>
+      <% categories.forEach(function(category) { %>
+        <div style="display: inline; padding-right: 10px;">
+          <input class="checkbox-input" type="checkbox" name="category" id="<%= category._id %>" value="<%= category._id %>" <%= category.checked ? 'checked' : '' %>>
+          <label for="<%= category._id %>">&nbsp;<%= category.name %></label>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+  <button class="btn btn-primary" type="submit">Submit</button>
+</form>
+
+<% if (errors && errors.length > 0) { %>
+  <ul>
+    <% errors.forEach(function(error) { %>
+      <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
+<% } %>
+
+<%- include('partials/footer') %>

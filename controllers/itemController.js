@@ -1,3 +1,4 @@
+const { body, validationResult } = require("express-validator");
 const Category = require("../models/category");
 const Item = require("../models/item");
 const asyncHandler = require("express-async-handler");
@@ -50,7 +51,15 @@ exports.item_detail = asyncHandler(async (req, res, next) => {
 
 // Display item create form on GET.
 exports.item_create_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Item create GET");
+  // Get all categories
+  const allCategories = await Category.find().sort({ name: 1 }).exec();
+
+  res.render('item_form', {
+    title: 'Create Item',
+    categories: allCategories,
+    item: {}, // Ensure `item` is always defined
+    errors: [] // Ensure `errors` is always defined
+  });
 });
 
 // Handle item create on POST.
