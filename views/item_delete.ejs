@@ -1,0 +1,13 @@
+<%- include('partials/header') %>
+<h1><%= title %>: <%= item.name %></h1>
+
+<p>Do you really want to delete this item?</p>
+
+<form method="POST" action="/catalog/item/<%= item._id %>/delete">
+  <div class="form-group">
+    <input class="form-control" type="hidden" name="item" value="<%= item._id %>">
+    <button class="btn btn-primary" type="submit">Delete</button>
+  </div>
+</form>
+
+<%- include('partials/footer') %>
