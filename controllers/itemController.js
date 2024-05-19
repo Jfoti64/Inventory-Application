@@ -63,9 +63,61 @@ exports.item_create_get = asyncHandler(async (req, res, next) => {
 });
 
 // Handle item create on POST.
-exports.item_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Item create POST");
-});
+exports.item_create_post = [
+  // Validate and sanitize fields.
+  body('name', 'Name must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Description must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('price', 'Price must be a positive number.').isFloat({ min: 0 }).escape(),
+  body('num_in_stock', 'Number in stock must be a non-negative integer.').isInt({ min: 0 }).escape(),
+  body('category.*').escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const item = new Item({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      num_in_stock: req.body.num_in_stock,
+      category: req.body.category,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      const allCategories = await Category.find().sort({ name: 1 }).exec();
+
+      // Mark selected categories as checked.
+      for (const category of allCategories) {
+        if (item.category && item.category.includes(category._id)) {
+          category.checked = 'true';
+        }
+      }
+
+      res.render("item_form", {
+        title: "Create Item",
+        categories: allCategories,
+        item: item,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid.
+      // Check if item with the same name already exists.
+      const itemExists = await Item.findOne({ name: req.body.name })
+        .collation({ locale: "en", strength: 2 })
+        .exec();
+      if (itemExists) {
+        // Item exists, redirect to its detail page.
+        res.redirect(itemExists.url);
+      } else {
+        await item.save();
+        // New item saved. Redirect to item detail page.
+        res.redirect(item.url);
+      }
+    }
+  }),
+];
 
 // Display item delete form on GET.
 exports.item_delete_get = asyncHandler(async (req, res, next) => {

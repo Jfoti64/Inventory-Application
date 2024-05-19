@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <h1><%= title %></h1>
 
-<form method="POST">
+<form method="POST" action="/catalog/item/create">
   <div class="form-group">
     <label for="name">Name:</label>
     <input id="name" class="form-control" type="text" placeholder="Name of item" name="name" required value="<%= item && item.name ? item.name : '' %>">
@@ -9,6 +9,14 @@
   <div class="form-group">
     <label for="description">Description:</label>
     <textarea id="description" class="form-control" placeholder="Description" name="description" required><%= item && item.description ? item.description : '' %></textarea>
+  </div>
+  <div class="form-group">
+    <label for="price">Price:</label>
+    <input id="price" class="form-control" type="text" placeholder="Price" name="price" required value="<%= item && item.price ? item.price : '' %>">
+  </div>
+  <div class="form-group">
+    <label for="num_in_stock">Number in stock:</label>
+    <input id="num_in_stock" class="form-control" type="text" placeholder="Number in stock" name="num_in_stock" required value="<%= item && item.num_in_stock ? item.num_in_stock : '' %>">
   </div>
   <div class="form-group">
     <label>Category:</label>
