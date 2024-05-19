@@ -1,0 +1,23 @@
+<%- include('partials/header') %>
+<h1><%= title %></h1>
+<ul>
+  <li>
+      Name: <%= item.name %>
+  </li>
+  <li>
+    Description: <%= item.description %>
+  </li>
+  <li>
+    Category:
+    <a href=<%= category.url %>>
+      <%= category.name %>
+    </a>
+  </li>
+  <li>
+    Price: $<%= item.price %>
+  </li>
+  <li>
+    Number in stock: <%= item.num_in_stock %>
+  </li>
+</ul>
+<%- include('partials/footer') %>
