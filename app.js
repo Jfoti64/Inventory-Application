@@ -11,6 +11,9 @@ const helmet = require("helmet");
 
 const app = express();
 
+// Enable 'trust proxy' setting
+app.set('trust proxy', 1);
+
 // Set up rate limiter: maximum of twenty requests per minute
 const RateLimit = require("express-rate-limit");
 const limiter = RateLimit({
@@ -19,7 +22,6 @@ const limiter = RateLimit({
 });
 // Apply rate limiter to all requests
 app.use(limiter);
-
 
 app.use(
   helmet.contentSecurityPolicy({
