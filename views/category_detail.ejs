@@ -1,0 +1,22 @@
+<%- include('partials/header') %>
+<h1><%= title %></h1>
+<ul>
+  <li>
+      Name: <%= category.name %>
+  </li>
+  <li>
+    Description: <%= category.description %>
+  </li>
+</ul>
+<br>
+<h2>Items in this category:</h2>
+<ul>
+  <% item_list.forEach(function(item) { %>
+    <li>
+      <a href="<%= item.url %>">
+        <%= item.name %>
+      </a>
+    </li>
+  <% }); %>
+</ul>
+<%- include('partials/footer') %>
