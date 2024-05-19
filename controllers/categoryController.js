@@ -114,10 +114,54 @@ exports.category_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display Category update form on GET.
 exports.category_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Category update GET");
+  const category = await Category.findById(req.params.id).exec();
+
+  if (category === null) {
+    // No results.
+    const err = new Error("Category not found");
+    err.status = 404;
+    return next(err);
+  }
+
+  res.render('category_form', {
+    title: 'Update Category',
+    category: category,
+    errors: [] // Ensure `errors` is always defined
+  });
 });
 
 // Handle Category update on POST.
-exports.category_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Category update POST");
-});
+exports.category_update_post = [
+  // Validate and sanitize fields.
+  body('name', 'Name must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Description must not be empty.').trim().isLength({ min: 1 }).escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+
+    // Create a Category object with escaped/trimmed data and old id.
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+      _id: req.params.id, // This is required, or a new ID will be assigned!
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+
+      res.render("category_form", {
+        title: "Update Category",
+        category: category,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid. Update the record.
+      const updatedCategory = await Category.findByIdAndUpdate(req.params.id, category, { new: true });
+      // Redirect to category detail page.
+      res.redirect(updatedCategory.url);
+    }
+  }),
+];

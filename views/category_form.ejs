@@ -1,7 +1,7 @@
 <%- include('partials/header') %>
 <h1><%= title %></h1>
 
-<form method="POST" action="/catalog/category/<%= category._id %>/delete">
+<form method="POST">
   <div class="form-group">
     <label for="name">Name:</label>
     <input id="name" class="form-control" type="text" placeholder="Name of category" name="name" required value="<%= category && category.name ? category.name : '' %>">
