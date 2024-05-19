@@ -39,9 +39,45 @@ exports.category_create_get = (req, res, next) => {
 };
 
 // Handle Category create on POST.
-exports.category_create_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Category create POST");
-});
+exports.category_create_post = [
+  // Validate and sanitize fields.
+  body('name', 'Name must not be empty.').trim().isLength({ min: 1 }).escape(),
+  body('description', 'Description must not be empty.').trim().isLength({ min: 1 }).escape(),
+
+  // Process request after validation and sanitization.
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const category = new Category({
+      name: req.body.name,
+      description: req.body.description,
+    });
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render("category_form", {
+        title: "Create Category",
+        category: category,
+        errors: errors.array(),
+      });
+      return;
+    } else {
+      // Data from form is valid.
+      // Check if category with the same name already exists.
+      const categoryExists = await Category.findOne({ name: req.body.name })
+        .collation({ locale: "en", strength: 2 })
+        .exec();
+      if (categoryExists) {
+        // Category exists, redirect to its detail page.
+        res.redirect(categoryExists.url);
+      } else {
+        await category.save();
+        // New category saved. Redirect to category detail page.
+        res.redirect(category.url);
+      }
+    }
+  }),
+];
 
 // Display Category delete form on GET.
 exports.category_delete_get = asyncHandler(async (req, res, next) => {
